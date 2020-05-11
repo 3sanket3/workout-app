@@ -8,6 +8,7 @@ const { Option } = AntAutoComplete;
 function AutoComplete({ onSelect }) {
   const [exercises, setExercises] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [form] = Form.useForm();
 
   const search = debounce(async (text) => {
     if (text && text.length >= 3) {
@@ -42,6 +43,7 @@ function AutoComplete({ onSelect }) {
     if (exercise) {
       onSelect && onSelect(exercise);
     }
+    form.resetFields();
   }
   const options = exercises.map((exercise) => (
     <Option key={exercise.id} value={exercise.id}>
@@ -50,8 +52,8 @@ function AutoComplete({ onSelect }) {
   ));
 
   return (
-    <Form>
-      <Form.Item>
+    <Form form={form} initialValues={{ exercises: "" }}>
+      <Form.Item name="exercise">
         <AntAutoComplete
           onSearch={search}
           onSelect={onValueSelect}
