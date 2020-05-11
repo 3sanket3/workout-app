@@ -9,17 +9,18 @@ const StyledForm = styled(Form)`
   justify-content: space-between;
 `;
 
-function WorkoutForm({ selectedExercise, totalTime }) {
+function WorkoutForm({ selectedExercise, totalTime, onSubmitSuccess }) {
+  const [form] = Form.useForm();
   async function onSubmit(values) {
     if (selectedExercise.length) {
       const workoutObj = {
-        Name: values.workoutName,
+        Name: values.workoutName.trim(),
         "Link to Exercises": selectedExercise
           .map((ex) => ex.id)
           .filter((value, index, array) => array.indexOf(value) === index),
         Duration: totalTime,
-        Exercises: selectedExercise.map(
-          (ex, index) => `${index + 1} - ${ex.Name}`
+        Exercises: selectedExercise.map((ex, index) =>
+          `${index + 1} - ${ex.Name}`.trim()
         ),
       };
       console.log({ workoutObj });
@@ -30,16 +31,23 @@ function WorkoutForm({ selectedExercise, totalTime }) {
             fields: workoutObj,
           },
         ]);
-
+        form.resetFields();
+        onSubmitSuccess && onSubmitSuccess();
         message.success("Workout saved successfully");
       } catch (e) {
         message.error(`Unable to save the workout`);
       }
+    } else {
+      message.error("Please select at least one exercise");
     }
   }
 
   return (
-    <StyledForm onFinish={onSubmit} initialValues={{ workoutName: "" }}>
+    <StyledForm
+      form={form}
+      onFinish={onSubmit}
+      initialValues={{ workoutName: "" }}
+    >
       <Form.Item
         name="workoutName"
         rules={[{ required: true, message: "Please input workout name" }]}
@@ -49,7 +57,10 @@ function WorkoutForm({ selectedExercise, totalTime }) {
 
       <div>
         <span>Total Time:</span> <strong>{`${totalTime} m`}</strong>
-        <Button htmlType="submit"> Save</Button>
+        <Button htmlType="submit" style={{ margin: "0 1rem" }}>
+          {" "}
+          Save
+        </Button>
       </div>
     </StyledForm>
   );

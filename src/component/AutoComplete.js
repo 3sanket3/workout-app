@@ -44,6 +44,7 @@ function AutoComplete({ onSelect }) {
       onSelect && onSelect(exercise);
     }
     form.resetFields();
+    setExercises([]);
   }
   const options = exercises.map((exercise) => (
     <Option key={exercise.id} value={exercise.id}>
