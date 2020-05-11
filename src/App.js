@@ -1,73 +1,101 @@
-import React, { useEffect, useState, useCallback } from "react";
-import Airtable from "airtable";
-import { AutoComplete } from "antd";
-import debounce from "lodash/debounce";
-import { Form, Input } from "antd";
+import React, { useState } from "react";
+import AutoComplete from "./component/AutoComplete";
+import { Form, Button, Input } from "antd";
 import styled from "styled-components";
+import Container from "./styles/Container";
+import Header from "./styles/Header";
+import Card from "./styles/Card";
+import ItemCard from "./styles/ItemCard";
+import Page from "./styles/Page";
+import ExerciseCard from "./component/ExerciseCard";
+import { useEffect } from "react";
 
-const { Option } = AutoComplete;
+const TwoSection = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 1.5rem;
+`;
 
-const Container = styled.div`
-  max-width: 600px;
+const ExerciseList = styled(Card)`
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-gap: 1rem;
+`;
 
-  margin: 0 auto;
+const WorkoutForm = styled(Form)`
+  display: flex;
+  justify-content: space-between;
 `;
 function App() {
-  const [exercises, setExercises] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  const search = debounce(async (text) => {
-    if (text && text.length >= 3) {
-      setLoading(true);
-      const base = new Airtable({
-        apiKey: process.env.REACT_APP_AIRTABLE_API_KEY,
-      }).base("appmK01nXHKGmZzsX");
-      try {
-        const records = await base("Exercises")
-          .select({
-            view: "Grid view",
-            filterByFormula: `SEARCH("${text.toLowerCase()}", LOWER({Name}))`,
-          })
-          .firstPage();
-
-        setExercises(
-          records.map((record) => ({
-            ...record.fields,
-            id: record.id,
-          }))
-        );
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setLoading(false);
-      }
-    }
-  }, 500);
-
-  function onSelect(value) {
-    console.log(value);
+  const [selectedExercise, setSelectedExercise] = useState([]);
+  const [totalTime, setTotalTime] = useState(0);
+  function onExerciseSelect(exercise) {
+    setSelectedExercise(
+      selectedExercise.concat({ ...exercise, type: "exercise" })
+    );
   }
-  const options = exercises.map((exercise) => (
-    <Option key={exercise.id} value={exercise.id}>
-      {exercise.Name}
-    </Option>
-  ));
+
+  function getNumericTime(duration) {
+    return duration ? +duration.replace("m", "") : 0;
+  }
+  useEffect(() => {
+    console.log(selectedExercise);
+    const total = selectedExercise
+      .map((ex) => getNumericTime(ex.Duration))
+      .reduce((prev, next) => {
+        return prev + next;
+      }, 0);
+    console.log(total);
+    setTotalTime(total);
+  }, [selectedExercise]);
   return (
-    <Container>
-      <Form>
-        <Form.Item>
-          <AutoComplete
-            onSearch={search}
-            onSelect={onSelect}
-            allowClear={true}
-            autoFocus={true}
-          >
-            {options}
-          </AutoComplete>{" "}
-        </Form.Item>
-        {loading && "loading..."}
-      </Form>
-    </Container>
+    <Page>
+      <Container>
+        <Header>
+          <strong>Customize</strong> your workout {totalTime}
+        </Header>
+        <WorkoutForm>
+          <Form.Item>
+            <Input placeholder="Workout Name" />
+          </Form.Item>
+
+          <div>
+            <span>Total Time:</span> <strong>{`${totalTime} m`}</strong>
+            <Button> Save</Button>
+          </div>
+        </WorkoutForm>
+        <TwoSection>
+          <Card>
+            <AutoComplete onSelect={onExerciseSelect} />
+
+            <ItemCard>
+              Add Break{" "}
+              <Button
+                onClick={() =>
+                  setSelectedExercise([
+                    ...selectedExercise,
+                    {
+                      Name: "Break",
+                      Duration: "2m",
+                      id: "recoYfKkpzI71lXy1",
+                      type: "break",
+                    },
+                  ])
+                }
+              >
+                Add
+              </Button>
+            </ItemCard>
+          </Card>
+
+          <ExerciseList>
+            {selectedExercise.map((ex, index) => (
+              <ExerciseCard exercise={ex} key={index} />
+            ))}
+          </ExerciseList>
+        </TwoSection>
+      </Container>
+    </Page>
   );
 }
 
