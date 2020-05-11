@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AutoComplete from "./component/AutoComplete";
-import { Button } from "antd";
+import { Button, message } from "antd";
 import styled from "styled-components";
 import Container from "./styles/Container";
 import Header from "./styles/Header";
@@ -9,6 +9,9 @@ import ItemCard from "./styles/ItemCard";
 import Page from "./styles/Page";
 import ExerciseCard from "./component/ExerciseCard";
 import WorkoutForm from "./component/WorkoutForm";
+import getNumericTime from "./utils/getNumericTime";
+import Airtable from "airtable";
+
 const TwoSection = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -24,15 +27,32 @@ const ExerciseList = styled(Card)`
 function App() {
   const [selectedExercise, setSelectedExercise] = useState([]);
   const [totalTime, setTotalTime] = useState(0);
+  const [breakObj, setBreakObj] = useState();
+
   function onExerciseSelect(exercise) {
     setSelectedExercise(
       selectedExercise.concat({ ...exercise, type: "exercise" })
     );
   }
 
-  function getNumericTime(duration) {
-    return duration ? +duration.replace("m", "") : 0;
-  }
+  //get break obj from database
+  useEffect(() => {
+    async function getBreakObj() {
+      try {
+        const base = new Airtable({
+          apiKey: process.env.REACT_APP_AIRTABLE_API_KEY,
+        }).base("appmK01nXHKGmZzsX");
+
+        const breakData = await base("Exercises").find("recoYfKkpzI71lXy1");
+        setBreakObj({ ...breakData.fields, id: breakData.id, type: "break" });
+      } catch (e) {
+        message.error("Error occurred while loading break data");
+      }
+    }
+    getBreakObj();
+  }, []);
+
+  //calculate total on change of selected exercises
   useEffect(() => {
     console.log(selectedExercise);
     const total = selectedExercise
@@ -62,15 +82,7 @@ function App() {
               Add Break{" "}
               <Button
                 onClick={() =>
-                  setSelectedExercise([
-                    ...selectedExercise,
-                    {
-                      Name: "Break",
-                      Duration: "2m",
-                      id: "recoYfKkpzI71lXy1",
-                      type: "break",
-                    },
-                  ])
+                  setSelectedExercise([...selectedExercise, { ...breakObj }])
                 }
               >
                 Add

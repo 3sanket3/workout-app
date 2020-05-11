@@ -14,7 +14,9 @@ function WorkoutForm({ selectedExercise, totalTime }) {
     if (selectedExercise.length) {
       const workoutObj = {
         Name: values.workoutName,
-        "Link to Exercises": selectedExercise.map((ex) => ex.id),
+        "Link to Exercises": selectedExercise
+          .map((ex) => ex.id)
+          .filter((value, index, array) => array.indexOf(value) === index),
         Duration: totalTime,
       };
       console.log({ workoutObj });
