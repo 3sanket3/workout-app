@@ -2,7 +2,7 @@ import React from "react";
 import { Form, Button, Input, message } from "antd";
 import styled from "styled-components";
 
-import Airtable from "airtable";
+import getAirtableBase from "../utils/getAirtableBase";
 
 const StyledForm = styled(Form)`
   display: flex;
@@ -18,11 +18,12 @@ function WorkoutForm({ selectedExercise, totalTime }) {
           .map((ex) => ex.id)
           .filter((value, index, array) => array.indexOf(value) === index),
         Duration: totalTime,
+        Exercises: selectedExercise.map(
+          (ex, index) => `${index + 1} - ${ex.Name}`
+        ),
       };
       console.log({ workoutObj });
-      const base = new Airtable({
-        apiKey: process.env.REACT_APP_AIRTABLE_API_KEY,
-      }).base("appmK01nXHKGmZzsX");
+      const base = getAirtableBase();
       try {
         await base("Workout").create([
           {

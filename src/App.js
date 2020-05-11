@@ -10,7 +10,7 @@ import Page from "./styles/Page";
 import ExerciseCard from "./component/ExerciseCard";
 import WorkoutForm from "./component/WorkoutForm";
 import getNumericTime from "./utils/getNumericTime";
-import Airtable from "airtable";
+import getAirtableBase from "./utils/getAirtableBase";
 
 const TwoSection = styled.div`
   display: grid;
@@ -39,11 +39,9 @@ function App() {
   useEffect(() => {
     async function getBreakObj() {
       try {
-        const base = new Airtable({
-          apiKey: process.env.REACT_APP_AIRTABLE_API_KEY,
-        }).base("appmK01nXHKGmZzsX");
+        const base = getAirtableBase();
 
-        const breakData = await base("Exercises").find("recoYfKkpzI71lXy1");
+        const breakData = await base("Exercises").find("recCJqSECk6unSP3D");
         setBreakObj({ ...breakData.fields, id: breakData.id, type: "break" });
       } catch (e) {
         message.error("Error occurred while loading break data");

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import Airtable from "airtable";
 import { AutoComplete as AntAutoComplete } from "antd";
 import debounce from "lodash/debounce";
 import { Form } from "antd";
-import { useRef } from "react";
+import { LoadingOutlined } from "@ant-design/icons";
+import getAirtableBase from "../utils/getAirtableBase";
 const { Option } = AntAutoComplete;
 function AutoComplete({ onSelect }) {
   const [exercises, setExercises] = useState([]);
@@ -12,9 +12,7 @@ function AutoComplete({ onSelect }) {
   const search = debounce(async (text) => {
     if (text && text.length >= 3) {
       setLoading(true);
-      const base = new Airtable({
-        apiKey: process.env.REACT_APP_AIRTABLE_API_KEY,
-      }).base("appmK01nXHKGmZzsX");
+      const base = getAirtableBase();
       try {
         const records = await base("Exercises")
           .select({
@@ -58,6 +56,7 @@ function AutoComplete({ onSelect }) {
           onSearch={search}
           onSelect={onValueSelect}
           placeholder="Search"
+          suffixIcon={loading ? <LoadingOutlined /> : null}
         >
           {options}
         </AntAutoComplete>{" "}
