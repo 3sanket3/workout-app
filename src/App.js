@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AutoComplete from "./component/AutoComplete";
-import { Form, Button, Input } from "antd";
+import { Button } from "antd";
 import styled from "styled-components";
 import Container from "./styles/Container";
 import Header from "./styles/Header";
@@ -8,8 +8,7 @@ import Card from "./styles/Card";
 import ItemCard from "./styles/ItemCard";
 import Page from "./styles/Page";
 import ExerciseCard from "./component/ExerciseCard";
-import { useEffect } from "react";
-
+import WorkoutForm from "./component/WorkoutForm";
 const TwoSection = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -22,10 +21,6 @@ const ExerciseList = styled(Card)`
   grid-gap: 1rem;
 `;
 
-const WorkoutForm = styled(Form)`
-  display: flex;
-  justify-content: space-between;
-`;
 function App() {
   const [selectedExercise, setSelectedExercise] = useState([]);
   const [totalTime, setTotalTime] = useState(0);
@@ -48,22 +43,17 @@ function App() {
     console.log(total);
     setTotalTime(total);
   }, [selectedExercise]);
+
   return (
     <Page>
       <Container>
         <Header>
           <strong>Customize</strong> your workout {totalTime}
         </Header>
-        <WorkoutForm>
-          <Form.Item>
-            <Input placeholder="Workout Name" />
-          </Form.Item>
-
-          <div>
-            <span>Total Time:</span> <strong>{`${totalTime} m`}</strong>
-            <Button> Save</Button>
-          </div>
-        </WorkoutForm>
+        <WorkoutForm
+          selectedExercise={selectedExercise}
+          totalTime={totalTime}
+        ></WorkoutForm>
         <TwoSection>
           <Card>
             <AutoComplete onSelect={onExerciseSelect} />
