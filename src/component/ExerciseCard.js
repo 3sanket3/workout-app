@@ -2,7 +2,8 @@ import React from "react";
 import ItemCard from "../styles/ItemCard";
 import styled from "styled-components";
 import { Draggable } from "react-beautiful-dnd";
-
+import { ReactComponent as DragIcon } from "../assets/Drag.svg";
+import { ReactComponent as DeleteIcon } from "../assets/Delete.svg";
 const MetaInfo = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -18,20 +19,47 @@ const Info = styled.div`
     -2px -2px 4 0 rgba(255, 255, 255, 0.5);
   border-radius: 10;
 `;
-function ExerciseCard({ exercise, index, ...rest }) {
+
+const ExerciseCardStyle = styled(ItemCard)`
+  .header {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .delete-icon {
+    display: none;
+  }
+  &:hover {
+    box-shadow: 16px 16px 30px 0 rgba(0, 0, 0, 0.1),
+      -16px -16px 30px 0 rgb(255, 255, 255);
+    .delete-icon {
+      display: inline;
+      cursor: pointer;
+    }
+  }
+`;
+function ExerciseCard({ exercise, index, deleteExercise, ...rest }) {
   return (
     <Draggable draggableId={exercise.key} index={index} {...rest}>
       {(provided) => (
-        <ItemCard
+        <ExerciseCardStyle
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
         >
-          <h3>
-            <strong>{exercise.Name}</strong>{" "}
-            {exercise.type === "break" ? exercise.Duration : null}
-          </h3>
-
+          <div className="header">
+            <h3>
+              <DragIcon style={{ marginRight: "0.5rem" }}></DragIcon>
+              <strong>{exercise.Name}</strong>{" "}
+              {exercise.type === "break" ? exercise.Duration : null}
+            </h3>
+            <DeleteIcon
+              onClick={() => {
+                deleteExercise && deleteExercise(exercise);
+              }}
+              className="delete-icon"
+            ></DeleteIcon>
+          </div>
           {exercise.type === "exercise" && (
             <MetaInfo>
               <Info>
@@ -52,7 +80,7 @@ function ExerciseCard({ exercise, index, ...rest }) {
               </Info>
             </MetaInfo>
           )}
-        </ItemCard>
+        </ExerciseCardStyle>
       )}
     </Draggable>
   );

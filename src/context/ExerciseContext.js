@@ -33,9 +33,22 @@ function ExerciseContextProvider({ children }) {
   function replaceExercises(exercises = []) {
     setExercises([...exercises]);
   }
+
+  function deleteExercise(exercise) {
+    if (exercise) {
+      console.log("todelete", exercise);
+      setExercises(exercises.filter((exe) => exe.key !== exercise.key));
+    }
+  }
   return (
     <ExerciseContext.Provider
-      value={{ exercises, totalTime, addExercise, replaceExercises }}
+      value={{
+        exercises,
+        totalTime,
+        addExercise,
+        deleteExercise,
+        replaceExercises,
+      }}
     >
       {children}
     </ExerciseContext.Provider>

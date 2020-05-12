@@ -12,7 +12,7 @@ const StyledList = styled(Card)`
   grid-gap: 1rem;
 `;
 function ExerciseList() {
-  const { exercises, replaceExercises } = useExerciseContext();
+  const { exercises, deleteExercise, replaceExercises } = useExerciseContext();
   function onDragEnd({ source, destination }) {
     console.log({ source, destination });
     if (!destination || destination.index === source.index) {
@@ -27,7 +27,12 @@ function ExerciseList() {
 
   const List = () => {
     return exercises.map((exercise, index) => (
-      <ExerciseCard exercise={exercise} index={index} key={exercise.key} />
+      <ExerciseCard
+        exercise={exercise}
+        index={index}
+        key={exercise.key}
+        deleteExercise={(ex) => deleteExercise(ex)}
+      />
     ));
   };
   return (
