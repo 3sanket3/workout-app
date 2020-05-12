@@ -14,7 +14,6 @@ const StyledList = styled(Card)`
 function ExerciseList() {
   const { exercises, deleteExercise, replaceExercises } = useExerciseContext();
   function onDragEnd({ source, destination }) {
-    console.log({ source, destination });
     if (!destination || destination.index === source.index) {
       return;
     }

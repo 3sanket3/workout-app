@@ -25,7 +25,6 @@ function WorkoutForm() {
           `${index + 1} - ${ex.Name}`.trim()
         ),
       };
-      console.log({ workoutObj });
       const base = getAirtableBase();
       try {
         await base("Workout").create([

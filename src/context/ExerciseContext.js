@@ -36,7 +36,6 @@ function ExerciseContextProvider({ children }) {
 
   function deleteExercise(exercise) {
     if (exercise) {
-      console.log("todelete", exercise);
       setExercises(exercises.filter((exe) => exe.key !== exercise.key));
     }
   }
