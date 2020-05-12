@@ -11,6 +11,7 @@
     "antd": "^4.2.0",
     "lodash": "^4.17.15",
     "react": "^16.13.1",
+    "react-beautiful-dnd": "^13.0.0",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
     "styled-components": "^5.1.0"

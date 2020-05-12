@@ -13,18 +13,11 @@ import TopExercises from "./component/TopExercises";
 import getNumericTime from "./utils/getNumericTime";
 import getAirtableBase from "./utils/getAirtableBase";
 import { ReactComponent as AddBlue } from "./assets/Add_Blue.svg";
-
+import ExerciseList from "./component/ExerciseList";
 const TwoSection = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-gap: 1.5rem;
-`;
-
-const ExerciseList = styled(Card)`
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-auto-rows: max-content;
-  grid-gap: 1rem;
 `;
 
 const BreakCard = styled(ItemCard)`
@@ -41,13 +34,13 @@ const BreakCard = styled(ItemCard)`
   }
 `;
 function App() {
-  const [selectedExercise, setSelectedExercise] = useState([]);
+  const [selectedExercises, setSelectedExercises] = useState([]);
   const [totalTime, setTotalTime] = useState(0);
   const [breakObj, setBreakObj] = useState();
 
   function onExerciseSelect(exercise) {
-    setSelectedExercise(
-      selectedExercise.concat({ ...exercise, type: "exercise" })
+    setSelectedExercises(
+      selectedExercises.concat({ ...exercise, type: "exercise" })
     );
   }
 
@@ -68,15 +61,15 @@ function App() {
 
   //calculate total on change of selected exercises
   useEffect(() => {
-    console.log(selectedExercise);
-    const total = selectedExercise
+    console.log(selectedExercises);
+    const total = selectedExercises
       .map((ex) => getNumericTime(ex.Duration))
       .reduce((prev, next) => {
         return prev + next;
       }, 0);
     console.log(total);
     setTotalTime(total);
-  }, [selectedExercise]);
+  }, [selectedExercises]);
 
   return (
     <Page>
@@ -85,10 +78,10 @@ function App() {
           <strong>Customize</strong> your workout
         </Header>
         <WorkoutForm
-          selectedExercise={selectedExercise}
+          selectedExercise={selectedExercises}
           totalTime={totalTime}
           onSubmitSuccess={() => {
-            setSelectedExercise([]);
+            setSelectedExercises([]);
             setTotalTime(0);
           }}
         ></WorkoutForm>
@@ -100,7 +93,10 @@ function App() {
               <div className="add-icon">
                 <AddBlue
                   onClick={() =>
-                    setSelectedExercise([...selectedExercise, { ...breakObj }])
+                    setSelectedExercises([
+                      ...selectedExercises,
+                      { ...breakObj },
+                    ])
                   }
                 >
                   Add
@@ -111,11 +107,7 @@ function App() {
             <TopExercises onExerciseSelect={onExerciseSelect} />
           </Card>
 
-          <ExerciseList>
-            {selectedExercise.map((ex, index) => (
-              <ExerciseCard exercise={ex} key={index} />
-            ))}
-          </ExerciseList>
+          <ExerciseList exercises={selectedExercises}></ExerciseList>
         </TwoSection>
       </Container>
     </Page>
