@@ -4,7 +4,7 @@ import { message } from "antd";
 import styled from "styled-components";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import { ReactComponent as AddWhite } from "../assets/Add_White.svg";
-
+import { useExerciseContext } from "../context/ExerciseContext";
 const TopExercisesWrapper = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -32,9 +32,9 @@ const TopExercise = styled.div`
     justify-self: flex-start;
   }
 `;
-function TopExercises({ onExerciseSelect }) {
+function TopExercises() {
   const [exercises, setExercises] = useState([]);
-
+  const { addExercise } = useExerciseContext();
   useEffect(() => {
     async function getTopExercises() {
       const base = getAirtableBase();
@@ -68,10 +68,7 @@ function TopExercises({ onExerciseSelect }) {
       <TopExercisesWrapper>
         {exercises.map((exe) => (
           <TopExercise key={exe.id}>
-            <AddWhite
-              className="add-icon"
-              onClick={() => onExerciseSelect(exe)}
-            />
+            <AddWhite className="add-icon" onClick={() => addExercise(exe)} />
             <span className="name">{exe.Name}</span>
           </TopExercise>
         ))}

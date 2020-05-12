@@ -4,12 +4,13 @@ import debounce from "lodash/debounce";
 import { Form } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import getAirtableBase from "../utils/getAirtableBase";
+import { useExerciseContext } from "../context/ExerciseContext";
 const { Option } = AntAutoComplete;
-function AutoComplete({ onSelect }) {
+function AutoComplete() {
   const [exercises, setExercises] = useState([]);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
-
+  const { addExercise } = useExerciseContext();
   const search = debounce(async (text) => {
     if (text && text.length >= 3) {
       setLoading(true);
@@ -41,7 +42,7 @@ function AutoComplete({ onSelect }) {
   function onValueSelect(value) {
     const exercise = exercises.find((ex) => ex.id === value);
     if (exercise) {
-      onSelect && onSelect(exercise);
+      addExercise && addExercise(exercise);
     }
     form.resetFields();
     setExercises([]);

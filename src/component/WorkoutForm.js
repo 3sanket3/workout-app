@@ -3,23 +3,25 @@ import { Form, Button, Input, message } from "antd";
 import styled from "styled-components";
 
 import getAirtableBase from "../utils/getAirtableBase";
+import { useExerciseContext } from "../context/ExerciseContext";
 
 const StyledForm = styled(Form)`
   display: flex;
   justify-content: space-between;
 `;
 
-function WorkoutForm({ selectedExercise, totalTime, onSubmitSuccess }) {
+function WorkoutForm() {
+  const { exercises, totalTime, replaceExercises } = useExerciseContext();
   const [form] = Form.useForm();
   async function onSubmit(values) {
-    if (selectedExercise.length) {
+    if (exercises.length) {
       const workoutObj = {
         Name: values.workoutName.trim(),
-        "Link to Exercises": selectedExercise
+        "Link to Exercises": exercises
           .map((ex) => ex.id)
           .filter((value, index, array) => array.indexOf(value) === index),
         Duration: totalTime,
-        Exercises: selectedExercise.map((ex, index) =>
+        Exercises: exercises.map((ex, index) =>
           `${index + 1} - ${ex.Name}`.trim()
         ),
       };
@@ -32,9 +34,10 @@ function WorkoutForm({ selectedExercise, totalTime, onSubmitSuccess }) {
           },
         ]);
         form.resetFields();
-        onSubmitSuccess && onSubmitSuccess();
+        replaceExercises && replaceExercises();
         message.success("Workout saved successfully");
       } catch (e) {
+        console.log(e);
         message.error(`Unable to save the workout`);
       }
     } else {

@@ -1,6 +1,7 @@
 import React from "react";
 import ItemCard from "../styles/ItemCard";
 import styled from "styled-components";
+import { Draggable } from "react-beautiful-dnd";
 
 const MetaInfo = styled.div`
   display: grid;
@@ -17,35 +18,43 @@ const Info = styled.div`
     -2px -2px 4 0 rgba(255, 255, 255, 0.5);
   border-radius: 10;
 `;
-function ExerciseCard({ exercise, ...rest }) {
+function ExerciseCard({ exercise, index, ...rest }) {
   return (
-    <ItemCard {...rest}>
-      <h3>
-        <strong>{exercise.Name}</strong>{" "}
-        {exercise.type === "break" ? exercise.Duration : null}
-      </h3>
+    <Draggable draggableId={exercise.key} index={index} {...rest}>
+      {(provided) => (
+        <ItemCard
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+        >
+          <h3>
+            <strong>{exercise.Name}</strong>{" "}
+            {exercise.type === "break" ? exercise.Duration : null}
+          </h3>
 
-      {exercise.type === "exercise" && (
-        <MetaInfo>
-          <Info>
-            <span>SETS</span>
-            <strong>{exercise.Sets}</strong>
-          </Info>
-          <Info>
-            <span>REPS</span>
-            <strong>{exercise.Repetition}</strong>
-          </Info>
-          <Info>
-            <span>Time</span>
-            <strong>{exercise.Duration}</strong>
-          </Info>
-          <Info>
-            <span>Rest</span>
-            <strong>{exercise["Rest Between"]}</strong>
-          </Info>
-        </MetaInfo>
+          {exercise.type === "exercise" && (
+            <MetaInfo>
+              <Info>
+                <span>SETS</span>
+                <strong>{exercise.Sets}</strong>
+              </Info>
+              <Info>
+                <span>REPS</span>
+                <strong>{exercise.Repetition}</strong>
+              </Info>
+              <Info>
+                <span>Time</span>
+                <strong>{exercise.Duration}</strong>
+              </Info>
+              <Info>
+                <span>Rest</span>
+                <strong>{exercise["Rest Between"]}</strong>
+              </Info>
+            </MetaInfo>
+          )}
+        </ItemCard>
       )}
-    </ItemCard>
+    </Draggable>
   );
 }
 
